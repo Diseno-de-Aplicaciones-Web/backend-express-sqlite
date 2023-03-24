@@ -32,12 +32,6 @@ db.run(`
         )
 `);
 
-
-export const addUserSQL = `INSERT INTO users(name, password) VALUES (?, ?)`;
-
-export const authenticateUserSQL = `SELECT id, name FROM users WHERE name=? AND password=?`;
-
-
 /**
  * .all nos permite recibir un array de datos obtenidos de la
  * base de datos en base a la consulta SQL planteada.
@@ -100,6 +94,42 @@ app.post("/tarefa/", (peticion, respuesta)=>{
         `INSERT INTO tareas(id, descripcion, completada) VALUES (?, ?, ?)`,
         [peticion.body.id, peticion.body.descripcion, peticion.body.completada],
         (error) => {
+            if (error) {
+                console.error(error) 
+                respuesta.status(500)
+                respuesta.send(`Error accediendo a la base de datos.
+                Consulta la consola del backend para más información`)
+            } else {
+                respuesta.status(200)
+                respuesta.send("Ok")
+            }
+        }
+    )
+})
+
+app.put("/tarefa/", (peticion, respuesta)=>{
+    db.run(
+        'UPDATE tareas SET descripcion = ?, completada = ? WHERE id = ?',
+        [peticion.body.descripcion, peticion.body.completada, peticion.body.id],
+        (error)=>{
+            if (error) {
+                console.error(error) 
+                respuesta.status(500)
+                respuesta.send(`Error accediendo a la base de datos.
+                Consulta la consola del backend para más información`)
+            } else {
+                respuesta.status(200)
+                respuesta.send("Ok")
+            }
+        }
+    )
+})
+
+app.delete("/tarefa/", (peticion, respuesta)=>{
+    db.run(
+        'DELETE FROM tareas WHERE id = ?',
+        [peticion.body.id],
+        (error)=>{
             if (error) {
                 console.error(error) 
                 respuesta.status(500)
